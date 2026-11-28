@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Artifact Lab | Muniba Maqsood</title>
+<meta name="description" content="Interactive tools by Muniba Maqsood: EOQ and reorder point, demand forecasting, supplier ranking and a graph theory metric dimension demo.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#8ec3f0;--band:#a9d2f4;--card:#f4f9ff;--ink:#0c2a43;--mute:#35536e;--line:#6fa8d6;--acc:#0b4a73;--acc-ink:#fff;--tag:#dcecfb;--c1:#b8460f;--c2:#1f7a4d;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1d2e;--band:#102539;--card:#15304a;--ink:#e6f1fb;--mute:#a7c0d8;--line:#2b4d6b;--acc:#7cc0f5;--acc-ink:#071a2a;--tag:#1d3f5e;--c1:#f0a36b;--c2:#6fd1a0;--bad:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1d2e;--band:#102539;--card:#15304a;--ink:#e6f1fb;--mute:#a7c0d8;--line:#2b4d6b;--acc:#7cc0f5;--acc-ink:#071a2a;--tag:#1d3f5e;--c1:#f0a36b;--c2:#6fd1a0;--bad:#ff8a80;color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*{box-sizing:border-box}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 "Work Sans",system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.12;margin:0}
+a{color:var(--acc)}
+.wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
+:focus-visible{outline:3px solid var(--acc);outline-offset:3px;border-radius:4px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:1.4rem;height:60px}
+.logo{font:700 1.05rem Fraunces,Georgia,serif;color:var(--ink);text-decoration:none;white-space:nowrap}
+nav{display:flex;gap:1.1rem;overflow-x:auto;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+nav a{color:var(--mute);text-decoration:none;font-size:.95rem;font-weight:500;white-space:nowrap}nav a:hover{color:var(--ink)}
+.hero{padding:4rem 0 3rem}
+h1{font-size:clamp(2.4rem,7vw,4.2rem);letter-spacing:-.02em}
+.role{font:600 1.4rem Fraunces,Georgia,serif;color:var(--acc);margin:.6rem 0 1.2rem}
+.lead{max-width:62ch;font-size:1.08rem}
+.btns{display:flex;gap:.7rem;flex-wrap:wrap}
+.btn{display:inline-block;padding:.65rem 1.3rem;border-radius:99px;font:600 1rem "Work Sans",sans-serif;text-decoration:none;background:var(--card);color:var(--ink);border:0;cursor:pointer}
+.btn.p{background:var(--acc);color:var(--acc-ink)}
+section{padding:3.5rem 0}
+section.band{background:var(--band)}
+h2{font-size:clamp(1.7rem,4vw,2.3rem);margin-bottom:.5rem}
+.card{background:var(--card);border-radius:14px;padding:1.4rem}
+.sub{color:var(--mute);margin:0 0 1.4rem;max-width:66ch}
+.tool{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:1rem;align-items:start}
+@media(max-width:760px){.tool{grid-template-columns:1fr}}
+.card h3{font-size:1.2rem;margin-bottom:.6rem}
+label{display:block;font-size:.88rem;font-weight:600;color:var(--mute);margin:.7rem 0 .2rem}
+input[type=number],input[type=text],textarea{width:100%;padding:.5rem .65rem;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.98rem}
+textarea{min-height:84px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6rem;margin-bottom:1rem}
+.stat{background:var(--tag);border-radius:10px;padding:.6rem .8rem}
+.stat b{display:block;font:700 1.5rem Fraunces,Georgia,serif;color:var(--acc);line-height:1.2}
+.stat span{font-size:.82rem;color:var(--mute)}
+svg.chart{width:100%;height:auto;display:block}
+.ax{stroke:var(--line);stroke-width:1}
+.tx{fill:var(--mute);font:11px "Work Sans",sans-serif}
+.legend{display:flex;flex-wrap:wrap;gap:.9rem;font-size:.85rem;color:var(--mute);margin:.4rem 0 0}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:.35rem;vertical-align:middle}
+.note{font-size:.88rem;color:var(--mute);margin:.9rem 0 0}
+.note strong{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:.35rem .4rem;border-bottom:1px solid var(--line)}
+td input{padding:.3rem .4rem}
+.bar{height:14px;border-radius:7px;background:var(--acc);min-width:2px}
+.msg{min-height:1.5em;font-weight:600}
+.msg.bad{color:var(--bad)}
+.vec{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.3rem .8rem;font:.88rem ui-monospace,Menlo,Consolas,monospace;margin-top:.6rem}
+.vec .dup{color:var(--bad);font-weight:700}
+.node{cursor:pointer}
+.node circle{fill:var(--card);stroke:var(--acc);stroke-width:2}
+.node.on circle{fill:var(--acc)}
+.node.on text{fill:var(--acc-ink)}
+.node text{fill:var(--ink);font:600 13px "Work Sans",sans-serif;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.edge{stroke:var(--line);stroke-width:2}
+footer{padding:2rem 0 3rem;font-size:.9rem;color:var(--mute)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="index.html">Muniba Maqsood</a>
+<nav aria-label="Main"><a href="index.html">Home</a><a href="#eoq">EOQ</a><a href="#forecast">Forecast</a><a href="#supplier">Suppliers</a><a href="#graph">Graph theory</a></nav></div></header>
+<main>
+<div class="hero"><div class="wrap">
+<h1>Artifact Lab</h1>
+<p class="role">Interactive tools you can try</p>
+<p class="lead">Small working tools that connect mathematics to real decisions: stock control, forecasting, supplier choice and graph theory. Each one states its model and its limits. Everything runs in your browser, with no data sent anywhere.</p>
+<p class="note" style="max-width:62ch">Inspired by the <a href="https://drimranjavaid.com/artifact-lab/" rel="noopener">IJ Artifact Lab</a> of Dr. Imran Javaid, Professor of Mathematics and Director of CASPAM. The tools here are my own implementations.</p>
+</div></div>
+
+<section class="band" id="eoq"><div class="wrap">
+<h2>EOQ and reorder point</h2>
+<p class="sub">How much should a shop order at a time, and when? This links directly to my demand prediction and replenishment project.</p>
+<div class="tool">
+<div class="card"><h3>Inputs</h3>
+<label for="eD">Annual demand (units)</label><input id="eD" type="number" value="1200" min="1" step="any">
+<label for="eS">Cost per order</label><input id="eS" type="number" value="50" min="0.01" step="any">
+<label for="eH">Holding cost per unit per year</label><input id="eH" type="number" value="6" min="0.01" step="any">
+<label for="eL">Lead time (days)</label><input id="eL" type="number" value="7" min="0" step="any">
+<label for="eSS">Safety stock (units)</label><input id="eSS" type="number" value="30" min="0" step="any">
+</div>
+<div class="card"><div class="out" id="eOut" aria-live="polite"></div>
+<svg class="chart" id="eChart" viewBox="0 0 600 280" role="img" aria-label="Annual cost against order quantity"></svg>
+<div class="legend"><span><i style="background:var(--c1)"></i>Ordering cost</span><span><i style="background:var(--c2)"></i>Holding cost</span><span><i style="background:var(--acc)"></i>Total cost</span></div>
+<p class="note"><strong>Model:</strong> Q* = √(2DS/H). Total cost = (D/Q)·S + (Q/2)·H, and the two parts are equal at Q*. Reorder point = daily demand × lead time + safety stock. <strong>Limits:</strong> assumes steady demand, a fixed lead time, no discounts and no stockouts. The purchase price of the goods is not included.</p>
+</div></div>
+</div></section>
+
+<section id="forecast"><div class="wrap">
+<h2>Demand forecasting</h2>
+<p class="sub">Paste a series of past demand values and compare two classic methods: a moving average and exponential smoothing.</p>
+<div class="tool">
+<div class="card"><h3>Inputs</h3>
+<label for="fData">Past demand (separate with commas)</label><textarea id="fData">120, 132, 128, 145, 150, 162, 158, 171, 180, 176, 190, 198</textarea>
+<label for="fK">Moving average window: <output id="fKo">3</output></label><input id="fK" type="range" min="2" max="8" step="1" value="3">
+<label for="fA">Smoothing factor α: <output id="fAo">0.40</output></label><input id="fA" type="range" min="0.05" max="0.95" step="0.05" value="0.4">
+</div>
+<div class="card"><div class="msg" id="fMsg"></div><div class="out" id="fOut" aria-live="polite"></div>
+<svg class="chart" id="fChart" viewBox="0 0 600 280" role="img" aria-label="Actual demand and forecasts"></svg>
+<div class="legend"><span><i style="background:var(--ink)"></i>Actual</span><span><i style="background:var(--c1)"></i>Moving average</span><span><i style="background:var(--c2)"></i>Exponential smoothing</span></div>
+<p class="note"><strong>Model:</strong> the moving average forecasts the mean of the last k values. Exponential smoothing updates a level: L<sub>t</sub> = α·x<sub>t</sub> + (1−α)·L<sub>t−1</sub>. The error shown is the mean absolute error of one-step-ahead forecasts, measured on the same periods for both methods. <strong>Limits:</strong> neither method models trend or seasonality, so both lag a rising series.</p>
+</div></div>
+</div></section>
+
+<section class="band" id="supplier"><div class="wrap">
+<h2>Supplier ranking</h2>
+<p class="sub">Choosing a supplier is a multi-criteria decision. Edit the numbers and the weights to see how the ranking changes.</p>
+<div class="card">
+<div style="overflow-x:auto"><table id="sTable" aria-label="Suppliers and criteria"></table></div>
+<h3 style="margin-top:1.2rem">Importance of each criterion</h3>
+<div class="tool" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))" id="sW"></div>
+<div class="msg" id="sMsg"></div>
+<div id="sOut" aria-live="polite"></div>
+<p class="note"><strong>Model:</strong> a weighted sum. Price and lead time (lower is better) are scored as best ÷ value. Quality and delivery reliability (higher is better) are scored as value ÷ best. Each score is multiplied by its weight and the total is shown out of 100. <strong>Limits:</strong> the result depends on the weights you choose, so it supports a decision and does not replace one.</p>
+</div>
+</div></section>
+
+<section id="graph"><div class="wrap">
+<h2>Metric dimension of the Petersen graph</h2>
+<p class="sub">Metric dimension is a graph theory idea: pick a few "landmark" vertices so that every vertex has a different list of distances to them. Click vertices to choose landmarks and see whether they work.</p>
+<div class="tool" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+<div class="card"><svg class="chart" id="gSvg" viewBox="0 0 400 400" role="group" aria-label="Petersen graph. Select vertices as landmarks."></svg>
+<div class="btns" style="margin-top:.6rem"><button class="btn p" id="gMin" type="button">Show a smallest set</button><button class="btn" id="gClear" type="button">Clear</button></div></div>
+<div class="card"><div class="msg" id="gMsg" aria-live="polite">Select a vertex to begin.</div>
+<div class="vec" id="gVec"></div>
+<p class="note"><strong>Idea:</strong> the distance vector of vertex v is (d(v,L1), d(v,L2), …). If two vertices share a vector, the landmarks cannot tell them apart. The smallest number of landmarks that works is the metric dimension, and for the Petersen graph it is 3. <strong>Limits:</strong> this demo covers one fixed graph with 10 vertices.</p>
+</div></div>
+</div></section>
+</main>
+<footer><div class="wrap">
+<div class="btns" style="margin-bottom:.8rem"><a class="btn p" href="index.html">Back to portfolio</a><button class="btn" id="chk" type="button">Run self-checks</button></div>
+<div id="chkOut" aria-live="polite"></div>
+© <span id="yr"></span> Muniba Maqsood · BS Mathematics, CASPAM</div></footer>
+
+<script id="core">
+function eoq(D,S,H){return Math.sqrt(2*D*S/H)}
+function totalCost(D,S,H,Q){return D/Q*S+Q/2*H}
+function reorderPoint(D,L,ss,days){days=days||365;return D/days*L+ss}
+function sma(x,k){var f=[],t,j,s;for(t=k;t<x.length;t++){s=0;for(j=t-k;j<t;j++)s+=x[j];f[t]=s/k}s=0;for(j=x.length-k;j<x.length;j++)s+=x[j];return{f:f,next:s/k}}
+function ses(x,a){var f=[],l=x[0],t;for(t=1;t<x.length;t++){f[t]=l;l=a*x[t]+(1-a)*l}return{f:f,next:l}}
+function mae(x,f,from){var s=0,c=0,t;for(t=from;t<x.length;t++){if(f[t]!==undefined){s+=Math.abs(x[t]-f[t]);c++}}return c?s/c:NaN}
+function rankSuppliers(rows,w){
+  var minP=Math.min.apply(null,rows.map(function(r){return r.price})),
+      maxQ=Math.max.apply(null,rows.map(function(r){return r.quality})),
+      maxD=Math.max.apply(null,rows.map(function(r){return r.delivery})),
+      minL=Math.min.apply(null,rows.map(function(r){return r.lead})),
+      tw=w.price+w.quality+w.delivery+w.lead;
+  return rows.map(function(r){
+    var s=tw>0?(w.price*minP/r.price+w.quality*r.quality/maxQ+w.delivery*r.delivery/maxD+w.lead*minL/r.lead)/tw*100:NaN;
+    return{name:r.name,score:s}}).sort(function(a,b){return b.score-a.score})}
+function petersen(){var adj=[],i;for(i=0;i<10;i++)adj.push([]);
+  function e(a,b){adj[a].push(b);adj[b].push(a)}
+  for(i=0;i<5;i++){e(i,(i+1)%5);e(i,i+5);e(5+i,5+(i+2)%5)}return adj}
+function distances(adj){var n=adj.length,D=[],s,q,d,u,k;
+  for(s=0;s<n;s++){d=[];for(k=0;k<n;k++)d.push(-1);d[s]=0;q=[s];
+    while(q.length){u=q.shift();adj[u].forEach(function(v){if(d[v]<0){d[v]=d[u]+1;q.push(v)}})}
+    D.push(d)}return D}
+function vectors(D,L){return D.map(function(row){return L.map(function(l){return row[l]}).join(",")})}
+function isResolving(D,L){var v=vectors(D,L),seen={},i;for(i=0;i<v.length;i++){if(seen[v[i]])return false;seen[v[i]]=1}return true}
+function minResolving(D){var n=D.length,size,a,b,c,L;
+  for(size=1;size<=3;size++){
+    if(size===1){for(a=0;a<n;a++)if(isResolving(D,[a]))return[a]}
+    if(size===2){for(a=0;a<n;a++)for(b=a+1;b<n;b++)if(isResolving(D,[a,b]))return[a,b]}
+    if(size===3){for(a=0;a<n;a++)for(b=a+1;b<n;b++)for(c=b+1;c<n;c++){L=[a,b,c];if(isResolving(D,L))return L}}}
+  return null}
+</script>
+
+<script>
+(function(){
+var NS="http://www.w3.org/2000/svg";
+function $(id){return document.getElementById(id)}
+function fmt(n,d){return Number.isFinite(n)?n.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"n/a"}
+function el(tag,attrs,text){var e=document.createElementNS(NS,tag),k;for(k in attrs)e.setAttribute(k,attrs[k]);if(text!==undefined)e.textContent=text;return e}
+function stat(label,value){var d=document.createElement("div");d.className="stat";var b=document.createElement("b");b.textContent=value;var s=document.createElement("span");s.textContent=label;d.appendChild(b);d.appendChild(s);return d}
+function fillStats(node,list){node.textContent="";list.forEach(function(p){node.appendChild(stat(p[0],p[1]))})}
+
+/* shared line chart */
+function lineChart(svg,o){
+  svg.textContent="";
+  var W=600,H=280,L=52,R=14,T=12,B=30,pw=W-L-R,ph=H-T-B;
+  function X(v){return L+(v-o.xmin)/(o.xmax-o.xmin||1)*pw}
+  function Y(v){return T+ph-(v-o.ymin)/(o.ymax-o.ymin||1)*ph}
+  var i,v;
+  for(i=0;i<=4;i++){v=o.ymin+(o.ymax-o.ymin)*i/4;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:Y(v),y2:Y(v),"class":"ax",opacity:.5}));
+    svg.appendChild(el("text",{x:L-6,y:Y(v)+4,"class":"tx","text-anchor":"end"},fmt(v,o.yd||0)))}
+  for(i=0;i<=4;i++){v=o.xmin+(o.xmax-o.xmin)*i/4;
+    svg.appendChild(el("text",{x:X(v),y:H-10,"class":"tx","text-anchor":"middle"},fmt(v,o.xd||0)))}
+  svg.appendChild(el("text",{x:L+pw/2,y:H-0,"class":"tx","text-anchor":"middle"},o.xlabel||""));
+  o.series.forEach(function(s){
+    var d="",pen=false;
+    s.pts.forEach(function(p){
+      if(p===null||p===undefined){pen=false;return}
+      d+=(pen?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)+" ";pen=true});
+    svg.appendChild(el("path",{d:d,fill:"none",stroke:s.color,"stroke-width":s.w||2.5,"stroke-linejoin":"round","stroke-dasharray":s.dash||"none"}));
+    if(s.dots)s.pts.forEach(function(p){if(p)svg.appendChild(el("circle",{cx:X(p[0]),cy:Y(p[1]),r:3,fill:s.color}))})});
+  (o.marks||[]).forEach(function(m){
+    svg.appendChild(el("line",{x1:X(m.x),x2:X(m.x),y1:T,y2:T+ph,stroke:"var(--acc)","stroke-dasharray":"4 3"}));
+    svg.appendChild(el("text",{x:X(m.x)+5,y:T+12,"class":"tx"},m.label))})
+}
+
+/* EOQ */
+function runEOQ(){
+  var D=+$("eD").value,S=+$("eS").value,H=+$("eH").value,Lt=+$("eL").value,SS=+$("eSS").value;
+  if(!(D>0&&S>0&&H>0&&Lt>=0&&SS>=0)){fillStats($("eOut"),[["Check inputs","Enter positive numbers"]]);$("eChart").textContent="";return}
+  var Q=eoq(D,S,H),orders=D/Q,tc=totalCost(D,S,H,Q);
+  fillStats($("eOut"),[["Order quantity (EOQ)",fmt(Q,1)+" units"],["Orders per year",fmt(orders,1)],["Days between orders",fmt(365/orders,1)],["Yearly ordering + holding cost",fmt(tc,2)],["Reorder point",fmt(reorderPoint(D,Lt,SS),1)+" units"]]);
+  var lo=Q*0.2,hi=Q*2.5,n=60,a=[],b=[],c=[],i,q,ymax=0;
+  for(i=0;i<=n;i++){q=lo+(hi-lo)*i/n;
+    var oc=D/q*S,hc=q/2*H;a.push([q,oc]);b.push([q,hc]);c.push([q,oc+hc]);ymax=Math.max(ymax,oc+hc)}
+  ymax=Math.min(ymax,tc*3.2);
+  var clip=function(arr){return arr.map(function(p){return p[1]<=ymax?p:null})};
+  lineChart($("eChart"),{xmin:lo,xmax:hi,ymin:0,ymax:ymax,xlabel:"Order quantity (units)",
+    series:[{pts:clip(a),color:"var(--c1)"},{pts:clip(b),color:"var(--c2)"},{pts:clip(c),color:"var(--acc)",w:3.2}],
+    marks:[{x:Q,label:"EOQ"}]})
+}
+
+/* Forecast */
+function runForecast(){
+  var k=+$("fK").value,al=+$("fA").value;
+  $("fKo").textContent=k;$("fAo").textContent=al.toFixed(2);
+  var x=$("fData").value.split(/[\s,;]+/).filter(function(s){return s!==""}).map(Number);
+  var msg=$("fMsg");msg.className="msg";
+  if(x.some(function(v){return !Number.isFinite(v)})){msg.textContent="Some entries are not numbers.";msg.className="msg bad";return}
+  if(x.length<k+2){msg.textContent="Enter at least "+(k+2)+" values for a window of "+k+".";msg.className="msg bad";return}
+  msg.textContent="";
+  var m=sma(x,k),s=ses(x,al),em=mae(x,m.f,k),es=mae(x,s.f,k);
+  fillStats($("fOut"),[["Next period: moving average",fmt(m.next,1)],["Next period: smoothing",fmt(s.next,1)],["Moving average error (MAE)",fmt(em,2)],["Smoothing error (MAE)",fmt(es,2)],["Lower error on this data",em===es?"Tie":(em<es?"Moving average":"Smoothing")]]);
+  var act=x.map(function(v,i){return[i+1,v]}),mp=[],sp=[],i;
+  for(i=0;i<x.length;i++){mp.push(m.f[i]===undefined?null:[i+1,m.f[i]]);sp.push(s.f[i]===undefined?null:[i+1,s.f[i]])}
+  mp.push([x.length+1,m.next]);sp.push([x.length+1,s.next]);
+  var all=x.concat([m.next,s.next]),mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),pad=(mx-mn)*0.1||1;
+  lineChart($("fChart"),{xmin:1,xmax:x.length+1,ymin:mn-pad,ymax:mx+pad,xlabel:"Period (last point is the forecast)",
+    series:[{pts:act,color:"var(--ink)",dots:true},{pts:mp,color:"var(--c1)",dash:"6 4"},{pts:sp,color:"var(--c2)",dash:"2 3"}]})
+}
+
+/* Suppliers */
+var sup=[["Supplier A",100,85,90,6],["Supplier B",92,78,82,9],["Supplier C",110,95,96,4],["Supplier D",88,70,75,12]];
+var crit=[["price","Price (lower is better)"],["quality","Quality score (higher)"],["delivery","On-time delivery % (higher)"],["lead","Lead time days (lower)"]];
+var wts={price:4,quality:3,delivery:2,lead:1};
+function buildSup(){
+  var t=$("sTable");t.textContent="";
+  var hr=t.insertRow();["Supplier"].concat(crit.map(function(c){return c[1]})).forEach(function(h){var th=document.createElement("th");th.textContent=h;hr.appendChild(th)});
+  sup.forEach(function(r,ri){var tr=t.insertRow();
+    for(var ci=0;ci<5;ci++){var td=tr.insertCell(),inp=document.createElement("input");
+      inp.type=ci?"number":"text";inp.value=r[ci];if(ci){inp.min="0.01";inp.step="any"}
+      inp.setAttribute("aria-label",(ci?crit[ci-1][1]:"Supplier name")+", row "+(ri+1));
+      (function(ri,ci,inp){inp.addEventListener("input",function(){sup[ri][ci]=ci?+inp.value:inp.value;runSup()})})(ri,ci,inp);
+      td.appendChild(inp)}});
+  var w=$("sW");w.textContent="";
+  crit.forEach(function(c){var d=document.createElement("div"),l=document.createElement("label"),o=document.createElement("output"),inp=document.createElement("input");
+    inp.type="range";inp.min=0;inp.max=10;inp.step=1;inp.value=wts[c[0]];o.textContent=inp.value;
+    l.textContent=c[1]+": ";l.appendChild(o);l.htmlFor="w_"+c[0];inp.id="w_"+c[0];
+    inp.addEventListener("input",function(){wts[c[0]]=+inp.value;o.textContent=inp.value;runSup()});
+    d.appendChild(l);d.appendChild(inp);w.appendChild(d)})
+}
+function runSup(){
+  var msg=$("sMsg"),out=$("sOut");out.textContent="";msg.className="msg";msg.textContent="";
+  var rows=sup.map(function(r){return{name:r[0]||"(unnamed)",price:+r[1],quality:+r[2],delivery:+r[3],lead:+r[4]}});
+  var ok=rows.every(function(r){return r.price>0&&r.quality>0&&r.delivery>0&&r.lead>0});
+  if(!ok){msg.textContent="All values must be positive numbers.";msg.className="msg bad";return}
+  if(wts.price+wts.quality+wts.delivery+wts.lead===0){msg.textContent="Give at least one criterion a weight above zero.";msg.className="msg bad";return}
+  var ranked=rankSuppliers(rows,wts),tbl=document.createElement("table");
+  ranked.forEach(function(r,i){var tr=tbl.insertRow(),a=tr.insertCell(),b=tr.insertCell(),c=tr.insertCell();
+    a.textContent=(i+1)+". "+r.name;a.style.width="30%";
+    var bar=document.createElement("div");bar.className="bar";bar.style.width=Math.max(1,r.score)+"%";b.appendChild(bar);
+    c.textContent=fmt(r.score,1);c.style.width="12%"});
+  out.appendChild(tbl)
+}
+
+/* Graph */
+var adj=petersen(),DM=distances(adj),sel=[];
+var pos=[],i;
+for(i=0;i<5;i++){var ang=-Math.PI/2+i*2*Math.PI/5;pos[i]=[200+150*Math.cos(ang),200+150*Math.sin(ang)];pos[i+5]=[200+70*Math.cos(ang),200+70*Math.sin(ang)]}
+function drawGraph(){
+  var g=$("gSvg");g.textContent="";
+  var drawn={};
+  adj.forEach(function(ns,u){ns.forEach(function(v){var key=Math.min(u,v)+"-"+Math.max(u,v);if(drawn[key])return;drawn[key]=1;
+    g.appendChild(el("line",{x1:pos[u][0],y1:pos[u][1],x2:pos[v][0],y2:pos[v][1],"class":"edge"}))})});
+  pos.forEach(function(p,v){
+    var on=sel.indexOf(v)>=0,grp=el("g",{"class":"node"+(on?" on":""),tabindex:0,role:"button","aria-pressed":on,"aria-label":"Vertex "+v});
+    grp.appendChild(el("circle",{cx:p[0],cy:p[1],r:17}));grp.appendChild(el("text",{x:p[0],y:p[1]},v));
+    function toggle(){var ix=sel.indexOf(v);if(ix>=0)sel.splice(ix,1);else sel.push(v);drawGraph();report()}
+    grp.addEventListener("click",toggle);
+    grp.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}});
+    g.appendChild(grp)})
+}
+function report(){
+  var m=$("gMsg"),box=$("gVec");box.textContent="";m.className="msg";
+  if(!sel.length){m.textContent="Select a vertex to begin.";return}
+  var vs=vectors(DM,sel),count={};
+  vs.forEach(function(v){count[v]=(count[v]||0)+1});
+  var res=isResolving(DM,sel);
+  m.textContent=res?("These "+sel.length+" landmarks tell every vertex apart."+(sel.length===3?" That is the minimum possible.":"")):"Not enough: some vertices share a distance vector (shown in red).";
+  if(!res)m.className="msg bad";
+  vs.forEach(function(v,i){var d=document.createElement("div");d.textContent=i+": ("+v+")";if(count[v]>1)d.className="dup";box.appendChild(d)})
+}
+
+/* self-checks */
+function near(a,b,t){return Math.abs(a-b)<=(t||1e-9)}
+function runChecks(){
+  var r=[];
+  function t(name,ok){r.push([name,!!ok])}
+  var Q=eoq(1200,50,6);
+  t("EOQ for D=1200, S=50, H=6 is about 141.42",near(Q,141.4214,1e-3));
+  t("Ordering cost equals holding cost at EOQ",near(1200/Q*50,Q/2*6,1e-9));
+  t("EOQ minimises total cost (neighbours are higher)",totalCost(1200,50,6,Q)<totalCost(1200,50,6,Q*0.9)&&totalCost(1200,50,6,Q)<totalCost(1200,50,6,Q*1.1));
+  t("Reorder point: 3650/yr, 5 days, safety 20 gives 70",near(reorderPoint(3650,5,20),70));
+  var m=sma([2,4,6,8],2);t("Moving average of [2,4,6,8], k=2 forecasts 3, 5 then 7",m.f[2]===3&&m.f[3]===5&&m.next===7);
+  t("Smoothing of [10,20], α=0.5 forecasts 15",ses([10,20],0.5).next===15);
+  t("Smoothing with α=1 repeats the last value",ses([3,9,4],1).next===4);
+  t("MAE of a perfect forecast is 0",mae([1,2,3],[undefined,2,3],1)===0);
+  var rk=rankSuppliers([{name:"good",price:10,quality:90,delivery:90,lead:5},{name:"bad",price:20,quality:60,delivery:70,lead:10}],{price:1,quality:1,delivery:1,lead:1});
+  t("A supplier that is better on every criterion ranks first with score 100",rk[0].name==="good"&&near(rk[0].score,100));
+  var edges=adj.reduce(function(s,n){return s+n.length},0)/2;
+  t("Petersen graph has 10 vertices, 15 edges, all of degree 3",adj.length===10&&edges===15&&adj.every(function(n){return n.length===3}));
+  t("Petersen graph has diameter 2",Math.max.apply(null,DM.map(function(row){return Math.max.apply(null,row)}))===2);
+  var best=minResolving(DM);
+  t("Smallest resolving set of the Petersen graph has 3 vertices",best&&best.length===3&&isResolving(DM,best));
+  t("No pair of vertices resolves the Petersen graph",(function(){for(var a=0;a<10;a++)for(var b=a+1;b<10;b++)if(isResolving(DM,[a,b]))return false;return true})());
+  var pass=r.filter(function(x){return x[1]}).length,out=$("chkOut");out.textContent="";
+  var h=document.createElement("p");h.className="msg"+(pass===r.length?"":" bad");h.textContent=pass+" of "+r.length+" checks passed";out.appendChild(h);
+  var ul=document.createElement("ul");r.forEach(function(x){var li=document.createElement("li");li.textContent=(x[1]?"Pass: ":"FAIL: ")+x[0];ul.appendChild(li)});out.appendChild(ul)
+}
+
+["eD","eS","eH","eL","eSS"].forEach(function(id){$(id).addEventListener("input",runEOQ)});
+["fData","fK","fA"].forEach(function(id){$(id).addEventListener("input",runForecast)});
+$("gClear").addEventListener("click",function(){sel=[];drawGraph();report()});
+$("gMin").addEventListener("click",function(){sel=minResolving(DM).slice();drawGraph();report()});
+$("chk").addEventListener("click",runChecks);
+$("yr").textContent=new Date().getFullYear();
+runEOQ();runForecast();buildSup();runSup();drawGraph();report();
+})();
+</script>
+</body>
+</html>
